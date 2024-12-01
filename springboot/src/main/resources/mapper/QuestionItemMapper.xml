@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.QuestionItemMapper">
+
+    <sql id="Base_Column_List">
+        id,content,question_id
+    </sql>
+
+    <select id="selectAll" resultType="com.example.entity.QuestionItem">
+        select
+        question_item.*,question.name as questionName
+        from question_item
+        left join question
+        on question_item.question_id=question.id
+        <where>
+            <if test="content != null"> and question_item.content like concat('%', #{content}, '%')</if>
+            <if test="questionId != null"> and question_item.question_id = #{questionId}</if>
+            <if test="questionName != null"> and question.name like concat('%', #{questionName}, '%')</if>
+
+        </where>
+    </select>
+
+    <select id="selectById" resultType="com.example.entity.QuestionItem">
+        select
+        <include refid="Base_Column_List" />
+        from question_item
+        where id = #{id}
+    </select>
+    <select id="selectByQuestionId" resultType="com.example.entity.QuestionItem">
+        select
+        <include refid="Base_Column_List" />
+        from question_item
+        where question_id = #{questionId}
+    </select>
+
+    <delete id="deleteById">
+        delete from question_item
+        where  id = #{id}
+    </delete>
+    <delete id="deleteByQuestionId">
+        delete from question_item
+        where  question_id = #{questionId}
+    </delete>
+
+    <insert id="insert" parameterType="com.example.entity.QuestionItem" useGeneratedKeys="true" keyProperty="id">
+        insert into question_item
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="content != null">content,</if>
+            <if test="questionId != null">question_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="content != null">#{content},</if>
+            <if test="questionId != null">#{questionId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateById" parameterType="com.example.entity.QuestionItem">
+        update question_item
+        <set>
+            <if test="content != null">
+                content = #{content},
+            </if>
+            <if test="questionId != null">
+                question_id = #{questionId},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+</mapper>

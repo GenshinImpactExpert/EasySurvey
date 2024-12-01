@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.AnswerMapper">
+
+    <sql id="Base_Column_List">
+        id,question_id,content,page_id,no
+    </sql>
+
+    <select id="selectAll" resultType="com.example.entity.Answer">
+        select
+        answer.*,question.name as questionName,pages.name as pageName
+        from answer
+        left join question
+        on answer.question_id=question.id
+        left join  pages
+        on answer.page_id=pages.id
+
+        <where>
+
+            <if test="content != null"> and answer.content like concat('%', #{content}, '%')</if>
+            <if test="pageName != null"> and pages.name like concat('%', #{pageName}, '%')</if>
+            <if test="questionName != null"> and question.name like concat('%', #{questionName}, '%')</if>
+
+
+        </where>
+        order by id desc
+    </select>
+
+    <select id="selectById" resultType="com.example.entity.Answer">
+        select
+        <include refid="Base_Column_List" />
+        from answer
+        where id = #{id}
+    </select>
+
+    <delete id="deleteById">
+        delete from answer
+        where  id = #{id}
+    </delete>
+
+    <insert id="insert" parameterType="com.example.entity.Answer" useGeneratedKeys="true" keyProperty="id">
+        insert into answer
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="questionId != null">question_id,</if>
+            <if test="content != null">content,</if>
+            <if test="pageId != null">page_id,</if>
+            <if test="no != null">no,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="questionId != null">#{questionId},</if>
+            <if test="content != null">#{content},</if>
+            <if test="pageId != null">#{pageId},</if>
+            <if test="no != null">#{no},</if>
+        </trim>
+    </insert>
+
+    <update id="updateById" parameterType="com.example.entity.Answer">
+        update answer
+        <set>
+            <if test="questionId != null">
+                question_id = #{questionId},
+            </if>
+            <if test="content != null">
+                content = #{content},
+            </if>
+            <if test="pageId != null">
+                page_id = #{pageId},
+            </if>
+            <if test="no != null">
+                no = #{no},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+</mapper>
